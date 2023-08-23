@@ -9,6 +9,7 @@ import {AssetFromSource, AssetSourceComponentProps} from 'sanity'
 import {ConfigWarning} from './ConfigWarning'
 import {useImageShopConfig} from '../context/ImageShopConfigContext'
 import defaultLanguageResolver from '../languageResolver'
+import {getIframeParams} from '../util/imageshopUtils'
 
 declare global {
   // eslint-disable-next-line no-unused-vars
@@ -42,7 +43,7 @@ const ImageShopAssetSourceInternal = (props: Props) => {
     props.onClose()
   }
 
-  const handleEvent = (event: any) => {
+  const handleEvent = (event: MessageEvent) => {
     if (!event || !event.data) {
       return
     }
@@ -98,29 +99,7 @@ const ImageShopAssetSourceInternal = (props: Props) => {
     }
   }, [])
 
-  const iframeParams: any = {
-    IFRAMEINSERT: 'true',
-    HIDEIMAGEINFO: 'true',
-    INSERTIMIDIATELY: 'true',
-    SHOWSIZEDIALOGUE: 'true',
-    SHOWCROPDIALOGUE: 'true',
-    FREECROP: 'true',
-    IMAGESHOPINTERFACENAME: pluginConfig.IMAGESHOPINTERFACENAME || '',
-    IMAGESHOPDOCUMENTPREFIX: pluginConfig.IMAGESHOPDOCUMENTPREFIX || '',
-    CULTURE: pluginConfig.CULTURE || 'nb-NO',
-    PROFILEID: pluginConfig.PROFILEID || '',
-    REQUIREDUPLOADFIELDS: pluginConfig.REQUIREDUPLOADFIELDS || '',
-    UPLOADFIELDLANGUAGES: pluginConfig.UPLOADFIELDLANGUAGES || 'no,en',
-    IMAGESHOPTOKEN: pluginConfig.IMAGESHOPTOKEN,
-    IMAGESHOPSIZES: `${pluginConfig.IMAGE_ALIAS || 'Large'};${
-      pluginConfig.IMAGE_MAX_SIZE || '2048x2048'
-    }`,
-    FORMAT: 'json',
-  }
-
-  if (isMulti) {
-    iframeParams.ENABLEMULTISELECT = 'true'
-  }
+  const iframeParams = getIframeParams({pluginConfig, isMulti})
 
   const url = `${IMAGESHOP_INSERT_IMAGE_API}?${new URLSearchParams(iframeParams)}`
 
