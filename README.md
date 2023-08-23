@@ -4,7 +4,7 @@ Imageshop is a complete Digital Asset Management system (DAM system) for organiz
 
 > This is a **Sanity Studio v3** plugin. If you are still on sanity V2, [see the V2 plugin here](https://github.com/Keyteq/sanity-plugin-asset-source-imageshop)
 
-![Screenshot](screenshot.png)
+![Screenshot](https://github.com/screentek/Sanity/raw/main/screenshot.png)
 
 
 ## Installation
