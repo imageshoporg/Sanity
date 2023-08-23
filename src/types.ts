@@ -1,17 +1,3 @@
-export type AssetDocument = {
-  _id: string
-  label?: string
-  title?: string
-  description?: string
-  source?: {
-    id: string
-    name: string
-    url?: string
-  }
-  creditLine?: string
-  originalFilename?: string
-}
-
 export type ImageShopAsset = {
   documentId: string
   code: string
