@@ -1,6 +1,5 @@
 import {
   ArrayOfObjectsInputProps,
-  AssetFromSource,
   AssetSource,
   definePlugin,
   isArrayOfObjectsSchemaType,
@@ -34,7 +33,7 @@ export interface ImageShopPluginConfig {
 
   // custom hooks
   languageResolver?: () => string
-  fieldMapper?: (asset: AssetFromSource) => AssetFromSource
+  fieldMapper?: (asset: any, documentProps: any) => any
 }
 /**
  * @public
