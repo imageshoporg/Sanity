@@ -137,10 +137,10 @@ const ImageShopAssetSourceInternal = (props: Props) => {
       <Box padding={4}>
         {isLoadingMultiUpload && (
           <Stack space={3}>
-            <Flex align="flex-start" justify="flex-start">
+            <Flex align="center" justify="center">
               <Spinner muted />
             </Flex>
-            <Text size={1} muted align="left">
+            <Text size={1} muted align="center">
               Uploading images, please wait.
             </Text>
           </Stack>

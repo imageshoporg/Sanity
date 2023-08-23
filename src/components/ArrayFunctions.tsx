@@ -1,4 +1,4 @@
-import {ArraySchemaType} from '@sanity/types'
+import {ArraySchemaType} from 'sanity'
 import {AddIcon} from '@sanity/icons'
 import {useState} from 'react'
 import {Button} from '@sanity/ui'
@@ -7,7 +7,7 @@ import ImageShopAssetSource from './ImageShopAssetSource'
 import {ArrayInputFunctionsProps, AssetFromSource, useClient} from 'sanity'
 import defaultFieldMapper from '../fieldMapper'
 import {useImageShopConfig} from '../context/ImageShopConfigContext'
-import {ImageAsset} from '@sanity/types/src'
+import {ImageAsset} from 'sanity'
 
 // These are the props any implementation of the ArrayFunctions part will receive
 
