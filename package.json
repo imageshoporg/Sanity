@@ -79,5 +79,9 @@
   },
   "engines": {
     "node": ">=14"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sanityExchangeUrl": "https://www.sanity.io/plugins/sanity-plugin-asset-source-imageshop"
 }
