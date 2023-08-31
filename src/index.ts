@@ -8,13 +8,14 @@ import ImageShop from './components/ImageShopAssetSource'
 import Icon from './components/Icon'
 import ArrayFunctions from './components/ArrayFunctions'
 import {layoutResolver} from './layoutResolver'
+import {FieldMapper, LanguageResolver} from './types'
 
 /**
  * @public
  */
 export const imageShopAssetSource: AssetSource = {
   name: 'imageshop',
-  title: 'ImageShop',
+  title: 'Imageshop',
   component: ImageShop,
   icon: Icon,
 }
@@ -32,8 +33,8 @@ export interface ImageShopPluginConfig {
   IMAGE_MAX_SIZE?: string
 
   // custom hooks
-  languageResolver?: () => string
-  fieldMapper?: (asset: any, documentProps: any) => any
+  languageResolver?: LanguageResolver
+  fieldMapper?: FieldMapper
 }
 /**
  * @public

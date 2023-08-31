@@ -6,7 +6,7 @@ export const ConfigWarning = () => (
       <Text as="h1" weight="semibold">
         Missing configuration
       </Text>
-      <Text>You must first configure the plugin with your ImageShop credentials</Text>
+      <Text>You must first configure the plugin with your Imageshop credentials</Text>
       <Text>
         Edit the <code>sanity.config.ts/js</code> file in your Sanity Studio folder. And configure
         token like so:

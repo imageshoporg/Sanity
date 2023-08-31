@@ -5,8 +5,6 @@ import {Button} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import ImageShopAssetSource from './ImageShopAssetSource'
 import {ArrayInputFunctionsProps, AssetFromSource, useClient} from 'sanity'
-import defaultFieldMapper from '../fieldMapper'
-import {useImageShopConfig} from '../context/ImageShopConfigContext'
 import {ImageAsset} from 'sanity'
 
 // These are the props any implementation of the ArrayFunctions part will receive
@@ -21,10 +19,7 @@ const ArrayFunctions = (props: ArrayInputFunctionsProps<{_key: string}, ArraySch
   const {onItemAppend} = props
   const [isAssetSourceOpen, setIsAssetSourceOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const imageShopConfig = useImageShopConfig()
   const client = useClient({apiVersion: '2023-08-08'})
-
-  const fieldMapper = imageShopConfig.fieldMapper ? imageShopConfig.fieldMapper : defaultFieldMapper
 
   const handleAddMultipleBtnClick = () => {
     setIsAssetSourceOpen(true)
@@ -57,17 +52,14 @@ const ArrayFunctions = (props: ArrayInputFunctionsProps<{_key: string}, ArraySch
         const _key = randomKey(12)
 
         // Create object based on sanity datastructure for an image.
-        const theImage = fieldMapper(
-          {
-            _type: 'image',
-            _key,
-            asset: {
-              _type: 'reference',
-              _ref: imageAssetDocument._id,
-            },
+        const theImage = {
+          _type: 'image',
+          _key,
+          asset: {
+            _type: 'reference',
+            _ref: imageAssetDocument._id,
           },
-          dataLookup?.texts || {},
-        )
+        }
 
         onItemAppend(theImage)
       }

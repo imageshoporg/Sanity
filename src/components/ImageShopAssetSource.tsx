@@ -8,7 +8,6 @@ import {IMAGESHOP_CLIENT, IMAGESHOP_INSERT_IMAGE_API} from '../constants/constan
 import {AssetFromSource, AssetSourceComponentProps} from 'sanity'
 import {ConfigWarning} from './ConfigWarning'
 import {useImageShopConfig} from '../context/ImageShopConfigContext'
-import defaultLanguageResolver from '../languageResolver'
 import {getIframeParams} from '../util/imageshopUtils'
 
 declare global {
@@ -30,14 +29,14 @@ const ImageShopAssetSourceInternal = (props: Props) => {
   const pluginConfig = useImageShopConfig()
   const hasConfig = !!pluginConfig.IMAGESHOPTOKEN
   const [loadingMessage, setLoadingMessage] = useState<string | null>(
-    'Loading ImageShop Media Libary',
+    'Loading Imageshop Media Libary',
   )
   const contentRef = useRef<HTMLDivElement>(null)
   const domId = useRef(Date.now())
   const isMulti = isMultiUploadType
   const languageResolver = pluginConfig.languageResolver
-    ? pluginConfig.languageResolver
-    : () => defaultLanguageResolver(pluginConfig)
+
+  const fieldMapper = pluginConfig.fieldMapper
 
   const handleClose = () => {
     props.onClose()
@@ -64,6 +63,10 @@ const ImageShopAssetSourceInternal = (props: Props) => {
 
     const parsedEventData = JSON.parse(imageShopDataString)
 
+    const resolvedLanguage = languageResolver
+      ? languageResolver()
+      : pluginConfig.SANITY_ASSET_TEXT_LANGUAGE || 'no'
+
     if (Array.isArray(parsedEventData)) {
       if (!event.data) {
         return
@@ -72,8 +75,11 @@ const ImageShopAssetSourceInternal = (props: Props) => {
       if (!imageShopDatas || !Array.isArray(imageShopDatas) || imageShopDatas.length === 0) {
         return
       }
+
       const assetsToBeUploaded = imageShopDatas
-        .map((imageShopObject) => imageShopAssetToSanityAsset(imageShopObject, languageResolver))
+        .map((imageShopData) =>
+          imageShopAssetToSanityAsset(imageShopData, resolvedLanguage, fieldMapper),
+        )
         .filter((asset) => asset !== null) as AssetFromSource[]
 
       if (assetsToBeUploaded) {
@@ -81,8 +87,12 @@ const ImageShopAssetSourceInternal = (props: Props) => {
       }
     } else {
       const imageShopData = parsedEventData as ImageShopAsset
-      // console.log(imageShopData)
-      const uploadAsset = imageShopAssetToSanityAsset(imageShopData, languageResolver, title)
+      const uploadAsset = imageShopAssetToSanityAsset(
+        imageShopData,
+        resolvedLanguage,
+        fieldMapper,
+        title,
+      )
       if (uploadAsset) {
         selectedFiles = [uploadAsset]
       }
@@ -106,7 +116,7 @@ const ImageShopAssetSourceInternal = (props: Props) => {
   return (
     <Dialog
       id="imageshop-asset-source"
-      title="Select image from ImageShop"
+      title="Select image from Imageshop"
       onClose={handleClose}
       open
       width={hasConfig ? 4 : 1}

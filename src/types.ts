@@ -19,6 +19,13 @@ export type ImageShopAsset = {
       categories: string[]
     }
   }
+  InterfaceList: Array<{
+    InterfaceID: number
+    InterfaceName: string
+  }>
+  profile: any
 }
 
 export type ImageShopIFrameEventData = [string, string, number, number]
+export type FieldMapper = (sanityAssetDocumentProps: any, imageShopData: ImageShopAsset) => any
+export type LanguageResolver = () => string

@@ -1,4 +1,4 @@
-# Sanity Asset Source Plugin: ImageShop
+# Sanity Asset Source Plugin: Imageshop
 
 Imageshop is a complete Digital Asset Management system (DAM system) for organizing and sharing images, videos and documents. This plugin integrates Imageshop image picker neatly into Sanity, so that you can access all your company's images inside Sanity CMS with only one click. You can also upload photos to Imageshop without leaving Sanity.
 
@@ -10,7 +10,7 @@ Imageshop is a complete Digital Asset Management system (DAM system) for organiz
 ## Installation
 
 ```sh
-npm install @screentek/sanity-plugin-asset-source-imageshop
+npm install @imageshop-org/sanity-plugin-asset-source-imageshop
 ```
 
 ## Usage
@@ -19,7 +19,7 @@ Add it as a plugin in `sanity.config.ts` (or .js):
 
 ```ts
 import {defineConfig} from 'sanity'
-import {imageShopAsset} from '@screentek/sanity-plugin-asset-source-imageshop'
+import {imageShopAsset} from '@imageshop-org/sanity-plugin-asset-source-imageshop'
 
 export default defineConfig({
   //...
@@ -39,19 +39,19 @@ export default defineConfig({
 There are many ways to configure the interface for image selection.
 
 
-| Configuration key | Description |   Type         |   Default value   |
-| ------------- | ------------- | ---------------- | ----------------- |
-| **IMAGESHOPTOKEN**  | Required. Token to communicate with imageshop.  | string |  |
-| IMAGE_MAX_SIZE  | Max size of the image returned from imageshop to sanity. Format: WxH |  string  |  2048x2048 |
-| IMAGE_ALIAS  | Imageshop alias for permalink of image |  string  |  "Large" |
-| IMAGESHOPINTERFACENAME  |  Standard interface used when searching images.  | string |  |
-| IMAGESHOPDOCUMENTPREFIX  | Standrad document code prefix used when uploading images. |  string  |  |
-| CULTURE  | Language for the client. Supports en-US and nb-NO. Norwegian is default (nb-NO) |  string  | "nb-NO" |
-| PROFILEID  | 	Name of a profile, which has to be created by Screentek, which will return several different sizes and aspect ratios. IMAGESHOPSIZE can not be used together with a profile, and showing size dialogue or crop dialogue doens't make sence when using profiles. |  string  |  |
-| REQUIREDUPLOADFIELDS  | String indicating upload fields which are required, separated by komma. Possible values: name, description, rights, credits, tags |  string  |  |
-| UPLOADFIELDLANGUAGES  | List of languages which should be shown for name, description etc. Default = no,en. |  string  |  |
-| SANITY_ASSET_TEXT_LANGUAGE | What language to store in sanity, from the title, description and credit fields | string | "no" |
-| IMAGE_FIELDS_MAPPING | A mapping of IMAGE_SHOP_FIELD_NAME: SANITY_FIELD_NAME. Example: `{"description": "altText", "credits": "credits"}`. Fields will be imported on the image object as extra fields. Useful for e.g. altText. | object:{ string: string } | {} |
+| Configuration key | Description                                                                                                                                                                                                                                                      |   Type         |   Default value   |
+| ------------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| ---------------- | ----------------- |
+| **IMAGESHOPTOKEN**  | Required. Token to communicate with imageshop.                                                                                                                                                                                                                   | string |  |
+| IMAGE_MAX_SIZE  | Max size of the image returned from imageshop to sanity. Format: WxH                                                                                                                                                                                             |  string  |  2048x2048 |
+| IMAGE_ALIAS  | Imageshop alias for permalink of image                                                                                                                                                                                                                           |  string  |  "Large" |
+| IMAGESHOPINTERFACENAME  | Standard interface used when searching images.                                                                                                                                                                                                                   | string |  |
+| IMAGESHOPDOCUMENTPREFIX  | Standrad document code prefix used when uploading images.                                                                                                                                                                                                        |  string  |  |
+| CULTURE  | Language for the client. Supports en-US and nb-NO. Norwegian is default (nb-NO)                                                                                                                                                                                  |  string  | "nb-NO" |
+| PROFILEID  | 	Name of a profile, which has to be created by Imageshop, which will return several different sizes and aspect ratios. IMAGESHOPSIZE can not be used together with a profile, and showing size dialogue or crop dialogue doens't make sence when using profiles. |  string  |  |
+| REQUIREDUPLOADFIELDS  | String indicating upload fields which are required, separated by komma. Possible values: name, description, rights, credits, tags                                                                                                                                |  string  |  |
+| UPLOADFIELDLANGUAGES  | List of languages which should be shown for name, description etc. Default = no,en.                                                                                                                                                                              |  string  |  |
+| SANITY_ASSET_TEXT_LANGUAGE | What language to store in sanity, from the title, description and credit fields                                                                                                                                                                                  | string | "no" |
+| IMAGE_FIELDS_MAPPING | A mapping of IMAGE_SHOP_FIELD_NAME: SANITY_FIELD_NAME. Example: `{"description": "altText", "credits": "credits"}`. Fields will be imported on the image object as extra fields. Useful for e.g. altText.                                                        | object:{ string: string } | {} |
 
 
 
@@ -101,7 +101,9 @@ imageShopAsset({
     // example:
     const currentLanguage = "nb";  // get from localstorage ?
 
-    if (currentLanguage == "nb) return "no";
+    if (currentLanguage == "nb") {
+      return "no";
+    }
 
     // Default return some language that is valid.
     return "no";
@@ -117,26 +119,61 @@ If you want to assign custom `fields` on the image object, you can create a cust
 
 ```js
 imageShopAsset({
-  // Should return the asset after its transformed.
-  fieldMapper: (asset, texts) => {
-    // texts = data from imageshop. 
-    // asset = the sanity image object.
+  // Should return the sanityAssetDocumentProps after its transformed.
+  // imageShopData = data from imageshop. 
+  // sanityAssetDocumentProps = the sanity image asset document props
+  fieldMapper: (sanityAssetDocumentProps, imageShopData) => {
     // Do custom mapping of fields here. Example:
-    console.log({ asset, texts })
+    console.log({ sanityAssetDocumentProps, imageShopData })
 
-    asset.altText = texts.no.title
-    asset.credits = texts.no.credits
+    sanityAssetDocumentProps.altText = imageShopData?.text.no.title
+    sanityAssetDocumentProps.creditLine = imageShopData?.text.no.credits
 
-    return asset
+    return sanityAssetDocumentProps
   }
 });
 
 ```
 
+The **imageShopData** object the image data that is stored in imageshop. The object contains the following data:
+
+
+```typescript
+type ImageShopAsset = {
+  documentId: string
+  code: string
+  extraInfo: null | string
+  AuthorName: null | string
+  image: {
+    file: string
+    width: number
+    height: number
+    thumbnail: string
+  }
+  text: {
+    [k: string]: {
+      title: string
+      description: string
+      rights: string
+      credits: string
+      tags: string
+      categories: string[]
+    }
+  }
+  InterfaceList: Array<{
+    InterfaceID: number
+    InterfaceName: string
+  }>
+  profile: any
+}
+```
+
+
+
 
 ## License
 
-[MIT](LICENSE) © ImageShop AS
+[MIT](LICENSE) © Imageshop AS
 
 ## Develop & test
 
@@ -146,7 +183,7 @@ imageShopAsset({
 npm run link-watch
 
 # in another sanity installation
-npx yalc add @screentek/sanity-plugin-asset-source-imageshop && npx yalc link @screentek/sanity-plugin-asset-source-imageshop && npm install
+npx yalc add @imageshop-org/sanity-plugin-asset-source-imageshop && npx yalc link @imageshop-org/sanity-plugin-asset-source-imageshop && npm install
 ```
 
 This plugin uses [@sanity/plugin-kit](https://github.com/sanity-io/plugin-kit)
