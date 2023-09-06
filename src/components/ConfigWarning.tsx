@@ -23,7 +23,7 @@ imageShopAsset({IMAGESHOPTOKEN: "my-secret-token"})
       <Text>
         You can get your credentials by visiting{' '}
         <a href="https://www.imageshop.no/" rel="noopener noreferrer" target="_blank">
-          ImageShop
+          Imageshop
         </a>{' '}
         and get your token.
       </Text>
