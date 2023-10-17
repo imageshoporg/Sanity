@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react'
-import {Dialog, Spinner, Stack, Flex, Text, Box} from '@sanity/ui'
+import {Dialog, Spinner, Stack, Flex, Text, Box, Button} from '@sanity/ui'
 
 import {ImageShopAsset, ImageShopIFrameEventData} from '../types'
 import {IFrame} from './ImageShopAssetSource.styled'
@@ -9,6 +9,9 @@ import {AssetFromSource, AssetSourceComponentProps} from 'sanity'
 import {ConfigWarning} from './ConfigWarning'
 import {useImageShopConfig} from '../context/ImageShopConfigContext'
 import {getIframeParams} from '../util/imageshopUtils'
+import {useSecrets} from '@sanity/studio-secrets'
+import SecretsConfigView, {namespace, Secrets} from './SecretsConfigView'
+import {CogIcon} from '@sanity/icons'
 
 declare global {
   // eslint-disable-next-line no-unused-vars
@@ -27,7 +30,10 @@ type Props = AssetSourceComponentProps & {
 const ImageShopAssetSourceInternal = (props: Props) => {
   const {isLoadingMultiUpload, isMultiUploadType} = props
   const pluginConfig = useImageShopConfig()
-  const hasConfig = !!pluginConfig.IMAGESHOPTOKEN
+  const {secrets} = useSecrets<Secrets>(namespace)
+  const hasConfig = !!secrets?.apiKey
+  const [showSettings, setShowSettings] = useState(false)
+
   const [loadingMessage, setLoadingMessage] = useState<string | null>(
     'Loading Imageshop Media Libary',
   )
@@ -109,14 +115,25 @@ const ImageShopAssetSourceInternal = (props: Props) => {
     }
   }, [])
 
-  const iframeParams = getIframeParams({pluginConfig, isMulti})
+  const iframeParams = getIframeParams({pluginConfig, isMulti, apiKey: secrets?.apiKey})
 
-  const url = `${IMAGESHOP_INSERT_IMAGE_API}?${new URLSearchParams(iframeParams)}`
+  const url = iframeParams
+    ? `${IMAGESHOP_INSERT_IMAGE_API}?${new URLSearchParams(iframeParams)}`
+    : null
 
   return (
     <Dialog
       id="imageshop-asset-source"
       title="Select image from Imageshop"
+      header={
+        <Button
+          fontSize={[1]}
+          icon={CogIcon}
+          onClick={() => setShowSettings(true)}
+          mode="bleed"
+          aria-label="Imageshop settings"
+        />
+      }
       onClose={handleClose}
       open
       width={hasConfig ? 4 : 1}
@@ -144,7 +161,7 @@ const ImageShopAssetSourceInternal = (props: Props) => {
             </Text>
           </Stack>
         )}
-        {hasConfig && (
+        {hasConfig && !!url && (
           <div ref={contentRef} id={`imageshopWidget-${domId}`}>
             <IFrame
               onLoad={() => {
@@ -156,8 +173,9 @@ const ImageShopAssetSourceInternal = (props: Props) => {
             />
           </div>
         )}
-        {!hasConfig && <ConfigWarning />}
+        {!hasConfig && <ConfigWarning onOpenSettings={() => setShowSettings(true)} />}
       </Box>
+      {showSettings && <SecretsConfigView onClose={() => setShowSettings(false)} />}
     </Dialog>
   )
 }

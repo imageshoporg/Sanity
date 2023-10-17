@@ -28,7 +28,6 @@ export interface ImageShopPluginConfig {
   PROFILEID?: string
   REQUIREDUPLOADFIELDS?: string
   UPLOADFIELDLANGUAGES?: string
-  IMAGESHOPTOKEN?: string
   IMAGE_ALIAS?: string
   IMAGE_MAX_SIZE?: string
 

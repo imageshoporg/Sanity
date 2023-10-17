@@ -17,6 +17,7 @@ npm install @imageshop-org/sanity-plugin-asset-source-imageshop
 
 Add it as a plugin in `sanity.config.ts` (or .js):
 
+
 ```ts
 import {defineConfig} from 'sanity'
 import {imageShopAsset} from '@imageshop-org/sanity-plugin-asset-source-imageshop'
@@ -24,13 +25,12 @@ import {imageShopAsset} from '@imageshop-org/sanity-plugin-asset-source-imagesho
 export default defineConfig({
   //...
   plugins: [
-    imageShopAsset({
-      IMAGESHOPTOKEN: "<YOUR IMAGESHOP TOKEN>"
-    })
+    imageShopAsset({})
   ],
 })
 ```
 
+> **Note** When using the plugin for the first time, a popup will show where you provide your Imageshop API key. The API key will be stored securely in your sanity db using the @sanity/secrets package.
 
 
 ## Configuration
@@ -41,7 +41,6 @@ There are many ways to configure the interface for image selection.
 
 | Configuration key | Description                                                                                                                                                                                                                                                      |   Type         |   Default value   |
 | ------------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| ---------------- | ----------------- |
-| **IMAGESHOPTOKEN**  | Required. Token to communicate with imageshop.                                                                                                                                                                                                                   | string |  |
 | IMAGE_MAX_SIZE  | Max size of the image returned from imageshop to sanity. Format: WxH                                                                                                                                                                                             |  string  |  2048x2048 |
 | IMAGE_ALIAS  | Imageshop alias for permalink of image                                                                                                                                                                                                                           |  string  |  "Large" |
 | IMAGESHOPINTERFACENAME  | Standard interface used when searching images.                                                                                                                                                                                                                   | string |  |
