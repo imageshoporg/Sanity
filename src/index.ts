@@ -20,6 +20,21 @@ export const imageShopAssetSource: AssetSource = {
   icon: Icon,
 }
 
+export interface ExternalImageShopPluginConfig {
+  sanityAssetTextLanguage?: string
+  imageShopInterfaceName?: string
+  imageShopDocumentPrefix?: string
+  culture?: string
+  profileId?: string
+  requiredUploadFields?: string
+  uploadFieldLanguages?: string
+  imageAlias?: string
+  imageMaxSize?: string
+  // custom hooks
+  languageResolver?: LanguageResolver
+  fieldMapper?: FieldMapper
+}
+
 export interface ImageShopPluginConfig {
   SANITY_ASSET_TEXT_LANGUAGE?: string
   IMAGESHOPINTERFACENAME?: string
@@ -35,16 +50,32 @@ export interface ImageShopPluginConfig {
   languageResolver?: LanguageResolver
   fieldMapper?: FieldMapper
 }
+
+const mapExternalConfigToInternal = (
+  external: ExternalImageShopPluginConfig,
+): ImageShopPluginConfig => ({
+  SANITY_ASSET_TEXT_LANGUAGE: external.sanityAssetTextLanguage,
+  IMAGESHOPINTERFACENAME: external.imageShopInterfaceName,
+  IMAGESHOPDOCUMENTPREFIX: external.imageShopDocumentPrefix,
+  CULTURE: external.culture,
+  PROFILEID: external.profileId,
+  REQUIREDUPLOADFIELDS: external.requiredUploadFields,
+  IMAGE_ALIAS: external.imageAlias,
+  IMAGE_MAX_SIZE: external.imageMaxSize,
+  languageResolver: external.languageResolver,
+  fieldMapper: external.fieldMapper,
+})
 /**
  * @public
  */
-export const imageShopAsset = definePlugin<ImageShopPluginConfig>((config = {}) => {
+export const imageShopAsset = definePlugin<ExternalImageShopPluginConfig>((config = {}) => {
+  const mappedConfig = mapExternalConfigToInternal(config)
   return {
     name: 'sanity-plugin-asset-source-imageshop',
 
     studio: {
       components: {
-        layout: (props) => layoutResolver(props, config),
+        layout: (props) => layoutResolver(props, mappedConfig),
       },
     },
     form: {
