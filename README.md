@@ -44,10 +44,10 @@ There are many ways to configure the interface for image selection.
 | IMAGE_MAX_SIZE  | Max size of the image returned from imageshop to sanity. Format: WxH                                                                                                                                                                                             |  string  |  2048x2048 |
 | IMAGE_ALIAS  | Imageshop alias for permalink of image                                                                                                                                                                                                                           |  string  |  "Large" |
 | IMAGESHOPINTERFACENAME  | Standard interface used when searching images.                                                                                                                                                                                                                   | string |  |
-| IMAGESHOPDOCUMENTPREFIX  | Standrad document code prefix used when uploading images.                                                                                                                                                                                                        |  string  |  |
+| IMAGESHOPDOCUMENTPREFIX  | Standard document code prefix used when uploading images.                                                                                                                                                                                                        |  string  |  |
 | CULTURE  | Language for the client. Supports en-US and nb-NO. Norwegian is default (nb-NO)                                                                                                                                                                                  |  string  | "nb-NO" |
-| PROFILEID  | 	Name of a profile, which has to be created by Imageshop, which will return several different sizes and aspect ratios. IMAGESHOPSIZE can not be used together with a profile, and showing size dialogue or crop dialogue doens't make sence when using profiles. |  string  |  |
-| REQUIREDUPLOADFIELDS  | String indicating upload fields which are required, separated by komma. Possible values: name, description, rights, credits, tags                                                                                                                                |  string  |  |
+| PROFILEID  | 	Name of a profile, which has to be created by Imageshop, which will return several different sizes and aspect ratios. IMAGESHOPSIZE can not be used together with a profile, and showing size dialogue or crop dialogue doesn't make sense when using profiles. |  string  |  |
+| REQUIREDUPLOADFIELDS  | String indicating upload fields which are required, separated by comma. Possible values: name, description, rights, credits, tags                                                                                                                                |  string  |  |
 | UPLOADFIELDLANGUAGES  | List of languages which should be shown for name, description etc. Default = no,en.                                                                                                                                                                              |  string  |  |
 | SANITY_ASSET_TEXT_LANGUAGE | What language to store in sanity, from the title, description and credit fields                                                                                                                                                                                  | string | "no" |
 | IMAGE_FIELDS_MAPPING | A mapping of IMAGE_SHOP_FIELD_NAME: SANITY_FIELD_NAME. Example: `{"description": "altText", "credits": "credits"}`. Fields will be imported on the image object as extra fields. Useful for e.g. altText.                                                        | object:{ string: string } | {} |
@@ -92,10 +92,10 @@ If your sanity have multiple language you need to implement a language resolver,
 ```js
 imageShopAsset({
   languageResolver: () => {
-    // This really depdends on how you have implemented some kind of language context in sanity, where user
+    // This really depends on how you have implemented some kind of language context in sanity, where user
     // can switch language based on a select menu.
 
-    // Here you can get the current language in .e.g localstorage in your sanity client. 
+    // Here you can get the current language in e.g. localstorage in your sanity client. 
     // Then you return a valid imageshop language based on this.
     // example:
     const currentLanguage = "nb";  // get from localstorage ?
@@ -118,7 +118,7 @@ If you want to assign custom `fields` on the image object, you can create a cust
 
 ```js
 imageShopAsset({
-  // Should return the sanityAssetDocumentProps after its transformed.
+  // Should return the sanityAssetDocumentProps after it's transformed.
   // imageShopData = data from imageshop. 
   // sanityAssetDocumentProps = the sanity image asset document props
   fieldMapper: (sanityAssetDocumentProps, imageShopData) => {
