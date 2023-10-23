@@ -1,35 +1,25 @@
 import {useEffect, useRef, useState} from 'react'
 import {Dialog, Spinner, Stack, Flex, Text, Box, Button} from '@sanity/ui'
 
-import {ImageShopAsset, ImageShopIFrameEventData} from '../types'
+import {ImageShopAsset, ImageShopIFrameEventData, ImageShopPluginConfig} from '../types'
 import {IFrame} from './ImageShopAssetSource.styled'
 import {imageShopAssetToSanityAsset} from '../util/imageShopAssetToSanityAsset'
 import {IMAGESHOP_CLIENT, IMAGESHOP_INSERT_IMAGE_API} from '../constants/constants'
 import {AssetFromSource, AssetSourceComponentProps} from 'sanity'
 import {ConfigWarning} from './ConfigWarning'
-import {useImageShopConfig} from '../context/ImageShopConfigContext'
 import {getIframeParams} from '../util/imageshopUtils'
 import {useSecrets} from '@sanity/studio-secrets'
 import SecretsConfigView, {namespace, Secrets} from './SecretsConfigView'
 import {CogIcon} from '@sanity/icons'
 
-declare global {
-  // eslint-disable-next-line no-unused-vars
-  interface Window {
-    imageshop: any
-  }
-}
-
-window.imageshop = window.imageshop || {}
-
 type Props = AssetSourceComponentProps & {
   isMultiUploadType?: boolean
   isLoadingMultiUpload?: boolean
+  imageShopConfig: ImageShopPluginConfig
 }
 
-const ImageShopAssetSourceInternal = (props: Props) => {
-  const {isLoadingMultiUpload, isMultiUploadType} = props
-  const pluginConfig = useImageShopConfig()
+const ImageShopAssetSource = (props: Props) => {
+  const {isLoadingMultiUpload, isMultiUploadType, imageShopConfig: pluginConfig} = props
   const {secrets} = useSecrets<Secrets>(namespace)
   const hasConfig = !!secrets?.apiKey
   const [showSettings, setShowSettings] = useState(false)
@@ -180,6 +170,4 @@ const ImageShopAssetSourceInternal = (props: Props) => {
   )
 }
 
-export default function ImageShopAssetSource(props: Props) {
-  return <ImageShopAssetSourceInternal {...props} />
-}
+export default ImageShopAssetSource

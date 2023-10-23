@@ -1,4 +1,5 @@
-import {ImageShopPluginConfig} from '../index'
+import {ImageShopPluginConfig} from '../types'
+import {ExternalImageShopPluginConfig} from '../index'
 
 export const getIframeParams = ({
   pluginConfig,
@@ -38,3 +39,17 @@ export const getIframeParams = ({
 
   return iframeParams
 }
+export const mapExternalConfigToInternal = (
+  external: ExternalImageShopPluginConfig,
+): ImageShopPluginConfig => ({
+  SANITY_ASSET_TEXT_LANGUAGE: external.sanityAssetTextLanguage,
+  IMAGESHOPINTERFACENAME: external.imageShopInterfaceName,
+  IMAGESHOPDOCUMENTPREFIX: external.imageShopDocumentPrefix,
+  CULTURE: external.culture,
+  PROFILEID: external.profileId,
+  REQUIREDUPLOADFIELDS: external.requiredUploadFields,
+  IMAGE_ALIAS: external.imageAlias,
+  IMAGE_MAX_SIZE: external.imageMaxSize,
+  languageResolver: external.languageResolver,
+  fieldMapper: external.fieldMapper,
+})

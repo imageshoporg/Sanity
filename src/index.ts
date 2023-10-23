@@ -4,22 +4,16 @@ import {
   definePlugin,
   isArrayOfObjectsSchemaType,
 } from 'sanity'
-import ImageShop from './components/ImageShopAssetSource'
 import Icon from './components/Icon'
-import ArrayFunctions from './components/ArrayFunctions'
-import {layoutResolver} from './layoutResolver'
+import {proveConfigForArrayFunctions, provideConfigAssetSource} from './componentResolver'
 import {FieldMapper, LanguageResolver} from './types'
+import {mapExternalConfigToInternal} from './util/imageshopUtils'
 
-/**
- * @public
- */
-export const imageShopAssetSource: AssetSource = {
+export const imageShopAssetSource: Partial<AssetSource> = {
   name: 'imageshop',
   title: 'Imageshop',
-  component: ImageShop,
   icon: Icon,
 }
-
 export interface ExternalImageShopPluginConfig {
   sanityAssetTextLanguage?: string
   imageShopInterfaceName?: string
@@ -35,36 +29,6 @@ export interface ExternalImageShopPluginConfig {
   fieldMapper?: FieldMapper
 }
 
-export interface ImageShopPluginConfig {
-  SANITY_ASSET_TEXT_LANGUAGE?: string
-  IMAGESHOPINTERFACENAME?: string
-  IMAGESHOPDOCUMENTPREFIX?: string
-  CULTURE?: string
-  PROFILEID?: string
-  REQUIREDUPLOADFIELDS?: string
-  UPLOADFIELDLANGUAGES?: string
-  IMAGE_ALIAS?: string
-  IMAGE_MAX_SIZE?: string
-
-  // custom hooks
-  languageResolver?: LanguageResolver
-  fieldMapper?: FieldMapper
-}
-
-const mapExternalConfigToInternal = (
-  external: ExternalImageShopPluginConfig,
-): ImageShopPluginConfig => ({
-  SANITY_ASSET_TEXT_LANGUAGE: external.sanityAssetTextLanguage,
-  IMAGESHOPINTERFACENAME: external.imageShopInterfaceName,
-  IMAGESHOPDOCUMENTPREFIX: external.imageShopDocumentPrefix,
-  CULTURE: external.culture,
-  PROFILEID: external.profileId,
-  REQUIREDUPLOADFIELDS: external.requiredUploadFields,
-  IMAGE_ALIAS: external.imageAlias,
-  IMAGE_MAX_SIZE: external.imageMaxSize,
-  languageResolver: external.languageResolver,
-  fieldMapper: external.fieldMapper,
-})
 /**
  * @public
  */
@@ -73,11 +37,6 @@ export const imageShopAsset = definePlugin<ExternalImageShopPluginConfig>((confi
   return {
     name: 'sanity-plugin-asset-source-imageshop',
 
-    studio: {
-      components: {
-        layout: (props) => layoutResolver(props, mappedConfig),
-      },
-    },
     form: {
       components: {
         input: (props) => {
@@ -87,7 +46,11 @@ export const imageShopAsset = definePlugin<ExternalImageShopPluginConfig>((confi
             // @ts-ignore
             const shouldDisplayMultiUpload = arrayProps.schemaType?.options?.batchUpload
             if (shouldDisplayMultiUpload) {
-              return arrayProps.renderDefault({...arrayProps, arrayFunctions: ArrayFunctions})
+              return arrayProps.renderDefault({
+                ...arrayProps,
+                arrayFunctions: (arrayFunctionProps: any) =>
+                  proveConfigForArrayFunctions({props: arrayFunctionProps, config: mappedConfig}),
+              })
             }
           }
           return props.renderDefault(props)
@@ -95,7 +58,15 @@ export const imageShopAsset = definePlugin<ExternalImageShopPluginConfig>((confi
       },
       image: {
         assetSources: (prev) => {
-          return [...prev, imageShopAssetSource]
+          return [
+            ...prev,
+            {
+              ...imageShopAssetSource,
+              component: (props, context) => {
+                return provideConfigAssetSource({props, config: mappedConfig})
+              },
+            },
+          ]
         },
       },
     },

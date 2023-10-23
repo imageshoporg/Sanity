@@ -6,6 +6,7 @@ import {randomKey} from '@sanity/util/content'
 import ImageShopAssetSource from './ImageShopAssetSource'
 import {ArrayInputFunctionsProps, AssetFromSource, useClient} from 'sanity'
 import {ImageAsset} from 'sanity'
+import {ImageShopPluginConfig} from '../types'
 
 // These are the props any implementation of the ArrayFunctions part will receive
 
@@ -15,8 +16,12 @@ import {ImageAsset} from 'sanity'
  * @constructor
  */
 
-const ArrayFunctions = (props: ArrayInputFunctionsProps<{_key: string}, ArraySchemaType>) => {
-  const {onItemAppend} = props
+type Props = ArrayInputFunctionsProps<{_key: string}, ArraySchemaType> & {
+  imageShopConfig: ImageShopPluginConfig
+}
+
+const ArrayFunctions = (props: Props) => {
+  const {onItemAppend, imageShopConfig} = props
   const [isAssetSourceOpen, setIsAssetSourceOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const client = useClient({apiVersion: '2023-08-08'})
@@ -82,6 +87,7 @@ const ArrayFunctions = (props: ArrayInputFunctionsProps<{_key: string}, ArraySch
       />
       {isAssetSourceOpen && (
         <ImageShopAssetSource
+          imageShopConfig={imageShopConfig}
           isLoadingMultiUpload={isLoading}
           selectedAssets={[]}
           onClose={onClose}

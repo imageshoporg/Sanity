@@ -29,3 +29,19 @@ export type ImageShopAsset = {
 export type ImageShopIFrameEventData = [string, string, number, number]
 export type FieldMapper = (sanityAssetDocumentProps: any, imageShopData: ImageShopAsset) => any
 export type LanguageResolver = () => string
+
+export interface ImageShopPluginConfig {
+  SANITY_ASSET_TEXT_LANGUAGE?: string
+  IMAGESHOPINTERFACENAME?: string
+  IMAGESHOPDOCUMENTPREFIX?: string
+  CULTURE?: string
+  PROFILEID?: string
+  REQUIREDUPLOADFIELDS?: string
+  UPLOADFIELDLANGUAGES?: string
+  IMAGE_ALIAS?: string
+  IMAGE_MAX_SIZE?: string
+
+  // custom hooks
+  languageResolver?: LanguageResolver
+  fieldMapper?: FieldMapper
+}
