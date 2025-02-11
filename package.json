@@ -48,7 +48,8 @@
   "dependencies": {
     "@sanity/icons": "^2.5.0",
     "@sanity/incompatible-plugin": "^1.0.4",
-    "@sanity/studio-secrets": "^2.0.2"
+    "@sanity/studio-secrets": "^3.0.1",
+    "@sanity/ui": "^2.12.3"
   },
   "devDependencies": {
     "@sanity/pkg-utils": "^2.4.6",
@@ -70,14 +71,14 @@
     "react-dom": "^18.2.0",
     "react-is": "^18.2.0",
     "rimraf": "^5.0.1",
-    "sanity": "^3.15.1",
-    "styled-components": "^5.3.11",
+    "sanity": "^3.36.4",
+    "styled-components": "^6.1.15",
     "typescript": "^5.1.6"
   },
   "peerDependencies": {
     "react": "^18",
     "sanity": "^3",
-    "styled-components": "^5"
+    "styled-components": "^5.0 || ^6.0"
   },
   "engines": {
     "node": ">=14"
