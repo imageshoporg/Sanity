@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/imageshoporg/Sanity.git"
+    "url": "git+ssh://git@github.com/screentek/Sanity.git"
   },
   "license": "MIT",
   "author": "Aplia AS <petter.kjelkenes@aplia.no>",
