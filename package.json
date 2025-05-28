@@ -6,9 +6,9 @@
     "sanity",
     "sanity-plugin"
   ],
-  "homepage": "https://github.com/imageshoporg/Sanity#readme",
+  "homepage": "https://github.com/screentek/Sanity#readme",
   "bugs": {
-    "url": "https://github.com/imageshoporg/Sanity/issues"
+    "url": "https://github.com/screentek/Sanity/issues"
   },
   "repository": {
     "type": "git",
