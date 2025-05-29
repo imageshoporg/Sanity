@@ -6,13 +6,13 @@
     "sanity",
     "sanity-plugin"
   ],
-  "homepage": "https://github.com/screentek/Sanity#readme",
+  "homepage": "https://github.com/imageshoporg/Sanity#readme",
   "bugs": {
-    "url": "https://github.com/screentek/Sanity/issues"
+    "url": "https://github.com/imageshoporg/Sanity/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/screentek/Sanity.git"
+    "url": "git+ssh://git@github.com/imageshoporg/Sanity.git"
   },
   "license": "MIT",
   "author": "Aplia AS <petter.kjelkenes@aplia.no>",
