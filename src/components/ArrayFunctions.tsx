@@ -1,12 +1,12 @@
-import {ArraySchemaType} from 'sanity'
-import {AddIcon} from '@sanity/icons'
-import {useState} from 'react'
-import {Button} from '@sanity/ui'
-import {randomKey} from '@sanity/util/content'
+import { ArraySchemaType } from 'sanity'
+import { AddIcon } from '@sanity/icons'
+import { useState } from 'react'
+import { Button } from '@sanity/ui'
+import { randomKey } from '@sanity/util/content'
 import ImageShopAssetSource from './ImageShopAssetSource'
-import {ArrayInputFunctionsProps, AssetFromSource, useClient} from 'sanity'
-import {ImageAsset} from 'sanity'
-import {ImageShopPluginConfig} from '../types'
+import { ArrayInputFunctionsProps, AssetFromSource, useClient } from 'sanity'
+import { ImageAsset } from 'sanity'
+import { ImageShopPluginConfig } from '../types'
 
 // These are the props any implementation of the ArrayFunctions part will receive
 
@@ -16,15 +16,15 @@ import {ImageShopPluginConfig} from '../types'
  * @constructor
  */
 
-type Props = ArrayInputFunctionsProps<{_key: string}, ArraySchemaType> & {
+type Props = ArrayInputFunctionsProps<{ _key: string }, ArraySchemaType> & {
   imageShopConfig: ImageShopPluginConfig
 }
 
 const ArrayFunctions = (props: Props) => {
-  const {onItemAppend, imageShopConfig} = props
+  const { onItemAppend, imageShopConfig } = props
   const [isAssetSourceOpen, setIsAssetSourceOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const client = useClient({apiVersion: '2023-08-08'})
+  const client = useClient({ apiVersion: '2023-08-08' })
 
   const handleAddMultipleBtnClick = () => {
     setIsAssetSourceOpen(true)
@@ -87,6 +87,11 @@ const ArrayFunctions = (props: Props) => {
       />
       {isAssetSourceOpen && (
         <ImageShopAssetSource
+          assetSource={{
+            name: 'imageshop',
+            title: 'ImageShop',
+            component: () => null
+          }}
           imageShopConfig={imageShopConfig}
           isLoadingMultiUpload={isLoading}
           selectedAssets={[]}
