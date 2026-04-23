@@ -3,7 +3,10 @@ import {Dialog, Spinner, Stack, Flex, Text, Box, Button} from '@sanity/ui'
 
 import {ImageShopAsset, ImageShopIFrameEventData, ImageShopPluginConfig} from '../types'
 import {IFrame} from './ImageShopAssetSource.styled'
-import {imageShopAssetToSanityAsset} from '../util/imageShopAssetToSanityAsset'
+import {
+  imageShopAssetToSanityAsset,
+  imageShopAssetToSanityFileAsset,
+} from '../util/imageShopAssetToSanityAsset'
 import {IMAGESHOP_CLIENT, IMAGESHOP_INSERT_IMAGE_API} from '../constants/constants'
 import {AssetFromSource, AssetSourceComponentProps} from 'sanity'
 import {ConfigWarning} from './ConfigWarning'
@@ -38,7 +41,7 @@ const ImageShopAssetSource = (props: Props) => {
     props.onClose()
   }
 
-  const handleEvent = (event: MessageEvent) => {
+  const handleEvent = async (event: MessageEvent) => {
     if (!event || !event.data) {
       return
     }
@@ -72,23 +75,52 @@ const ImageShopAssetSource = (props: Props) => {
         return
       }
 
-      const assetsToBeUploaded = imageShopDatas
-        .map((imageShopData) =>
-          imageShopAssetToSanityAsset(imageShopData, resolvedLanguage, fieldMapper),
-        )
-        .filter((asset) => asset !== null) as AssetFromSource[]
+      const assetsToBeUploaded = await Promise.all(
+        imageShopDatas.map(async (imageShopData) => {
+          try {
+            return await imageShopAssetToSanityFileAsset(
+              imageShopData,
+              resolvedLanguage,
+              fieldMapper,
+            )
+          } catch (err) {
+            console.error(
+              'Imageshop: Failed to fetch image as file, falling back to URL upload.',
+              err,
+            )
+            return imageShopAssetToSanityAsset(imageShopData, resolvedLanguage, fieldMapper)
+          }
+        }),
+      )
 
-      if (assetsToBeUploaded) {
-        selectedFiles = assetsToBeUploaded
+      const filteredAssets = assetsToBeUploaded.filter((asset) => asset !== null) as AssetFromSource[]
+
+      if (filteredAssets) {
+        selectedFiles = filteredAssets
       }
     } else {
       const imageShopData = parsedEventData as ImageShopAsset
-      const uploadAsset = imageShopAssetToSanityAsset(
-        imageShopData,
-        resolvedLanguage,
-        fieldMapper,
-        title,
-      )
+      let uploadAsset: AssetFromSource | null = null
+      try {
+        uploadAsset = await imageShopAssetToSanityFileAsset(
+          imageShopData,
+          resolvedLanguage,
+          fieldMapper,
+          title,
+        )
+      } catch (err) {
+        console.error(
+          'Imageshop: Failed to fetch image as file, falling back to URL upload.',
+          err,
+        )
+        uploadAsset = imageShopAssetToSanityAsset(
+          imageShopData,
+          resolvedLanguage,
+          fieldMapper,
+          title,
+        )
+      }
+
       if (uploadAsset) {
         selectedFiles = [uploadAsset]
       }

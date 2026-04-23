@@ -37,37 +37,44 @@ const ArrayFunctions = (props: Props) => {
   const onSelect = async (files: AssetFromSource[]) => {
     setIsLoading(true)
 
-    // We support only kind url.
-
     const promises = files.map(async (file) => {
-      if (typeof file.value === 'string' && file.kind === 'url') {
-        // Convert url to to blob
+      let uploadFile: Blob | File | null = null
+
+      if (file.kind === 'url' && typeof file.value === 'string') {
         const resp = await fetch(file.value)
-        const blob = await resp.blob()
-
-        const dataLookup: ImageAsset | any = file.assetDocumentProps || {}
-
-        // Upload image via sanity client.
-        const imageAssetDocument = await client.assets.upload('image', blob, {
-          filename: file.assetDocumentProps?.originalFileName,
-          ...dataLookup,
-        })
-
-        // Create a random key for the array item.
-        const _key = randomKey(12)
-
-        // Create object based on sanity datastructure for an image.
-        const theImage = {
-          _type: 'image',
-          _key,
-          asset: {
-            _type: 'reference',
-            _ref: imageAssetDocument._id,
-          },
-        }
-
-        onItemAppend(theImage)
+        uploadFile = await resp.blob()
+      } else if (file.kind === 'file' && file.value instanceof Blob) {
+        uploadFile = file.value
       }
+
+      if (!uploadFile) {
+        return
+      }
+
+      const dataLookup: ImageAsset | any = file.assetDocumentProps || {}
+      const fileNameFromValue =
+        file.kind === 'file' && file.value instanceof File ? file.value.name : undefined
+
+      // Upload image via sanity client.
+      const imageAssetDocument = await client.assets.upload('image', uploadFile, {
+        filename: file.assetDocumentProps?.originalFileName || fileNameFromValue,
+        ...dataLookup,
+      })
+
+      // Create a random key for the array item.
+      const _key = randomKey(12)
+
+      // Create object based on sanity datastructure for an image.
+      const theImage = {
+        _type: 'image',
+        _key,
+        asset: {
+          _type: 'reference',
+          _ref: imageAssetDocument._id,
+        },
+      }
+
+      onItemAppend(theImage)
     })
 
     await Promise.all(promises)
