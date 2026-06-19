@@ -174,7 +174,6 @@ type ImageShopAsset = {
 
 ## Develop & test
 
-
 ```
 # in this project
 npm run link-watch
