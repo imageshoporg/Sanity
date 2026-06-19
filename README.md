@@ -2,7 +2,7 @@
 
 Imageshop is a complete Digital Asset Management system (DAM system) for organizing and sharing images, videos and documents. This plugin integrates Imageshop image picker neatly into Sanity, so that you can access all your company's images inside Sanity CMS with only one click. You can also upload photos to Imageshop without leaving Sanity.
 
-> This plugin (v2.x) targets **Sanity Studio v6**. For Sanity v3, use [v1.x](https://www.npmjs.com/package/@imageshop-org/sanity-plugin-asset-source-imageshop/v/1.0.0). For Sanity v2, [see the V2 plugin here](https://github.com/Keyteq/sanity-plugin-asset-source-imageshop).
+> This plugin (v2.x) targets **Sanity Studio v5 and v6**. For Sanity v3 and v4, use [v1.x](https://www.npmjs.com/package/@imageshop-org/sanity-plugin-asset-source-imageshop/v/1.0.0). For Sanity v2, [see the V2 plugin here](https://github.com/Keyteq/sanity-plugin-asset-source-imageshop).
 
 ![Screenshot](https://github.com/screentek/Sanity/raw/main/screenshot.png)
 
@@ -158,7 +158,7 @@ type ImageShopAsset = {
 # in this project
 npm run link-watch
 
-# in another Sanity v6 installation
+# in another Sanity installation
 npx yalc add @imageshop-org/sanity-plugin-asset-source-imageshop && npx yalc link @imageshop-org/sanity-plugin-asset-source-imageshop && npm install
 ```
 
