@@ -95,6 +95,7 @@ imageShopAsset({
 ## Custom fields for multi-uploaded images
 
 If you want to assign custom `fields` on the image object, you can create a custom field-mapper, which you can get texts from imageshop and then transfer the texts to the sanity image objects fields.
+By default, the alt text from imageshop is mapped to sanity internal "description" field with fallbacks to imageshop description / title fields.
 
 ```ts
 import {imageShopAsset} from '@imageshop-org/sanity-plugin-asset-source-imageshop'
@@ -106,7 +107,7 @@ imageShopAsset({
     // Do custom mapping of fields here. Example:
     console.log({sanityAssetDocumentProps, imageShopData})
 
-    sanityAssetDocumentProps.altText = imageShopData?.text.no.title
+    sanityAssetDocumentProps.description = imageShopData?.text.no.altText
     sanityAssetDocumentProps.creditLine = imageShopData?.text.no.credits
 
     return sanityAssetDocumentProps
@@ -131,6 +132,7 @@ type ImageShopAsset = {
   text: {
     [k: string]: {
       title: string
+      altText: string
       description: string
       rights: string
       credits: string
