@@ -1,11 +1,11 @@
 import {useEffect, useRef, useState} from 'react'
 import {Dialog, Spinner, Stack, Flex, Text, Box, Button} from '@sanity/ui'
+import {AssetFromSource, AssetSourceComponentProps} from 'sanity'
 
 import {ImageShopAsset, ImageShopIFrameEventData, ImageShopPluginConfig} from '../types'
 import {IFrame} from './ImageShopAssetSource.styled'
 import {imageShopAssetToSanityAsset} from '../util/imageShopAssetToSanityAsset'
 import {IMAGESHOP_CLIENT, IMAGESHOP_INSERT_IMAGE_API} from '../constants/constants'
-import {AssetFromSource, AssetSourceComponentProps} from 'sanity'
 import {ConfigWarning} from './ConfigWarning'
 import {getIframeParams} from '../util/imageshopUtils'
 import {useSecrets} from '@sanity/studio-secrets'
@@ -114,7 +114,6 @@ const ImageShopAssetSource = (props: Props) => {
   return (
     <Dialog
       id="imageshop-asset-source"
-      title="Select image from Imageshop"
       header={
         <Button
           fontSize={[1]}
@@ -125,7 +124,6 @@ const ImageShopAssetSource = (props: Props) => {
         />
       }
       onClose={handleClose}
-      open
       width={hasConfig ? 4 : 1}
       zOffset={9999}
     >

@@ -7,7 +7,6 @@ export const imageShopAssetToSanityAsset = (
   fieldMapper?: FieldMapper,
   documentTitle?: string,
 ): AssetFromSource | null => {
-  // Make a check, is this even from imageshop ? Should have .documentId and parsed the first part as json.
   if (!imageShopData || !imageShopData.documentId) {
     return null
   }
