@@ -1,9 +1,4 @@
-import {
-  ArrayOfObjectsInputProps,
-  AssetSource,
-  definePlugin,
-  isArrayOfObjectsSchemaType,
-} from 'sanity'
+import {definePlugin, isArrayOfObjectsInputProps, AssetSource} from 'sanity'
 import Icon from './components/Icon'
 import {proveConfigForArrayFunctions, provideConfigAssetSource} from './componentResolver'
 import {FieldMapper, LanguageResolver} from './types'
@@ -40,14 +35,12 @@ export const imageShopAsset = definePlugin<ExternalImageShopPluginConfig>((confi
     form: {
       components: {
         input: (props) => {
-          const {schemaType} = props
-          if (isArrayOfObjectsSchemaType(schemaType)) {
-            const arrayProps = props as ArrayOfObjectsInputProps
-            // @ts-ignore
-            const shouldDisplayMultiUpload = arrayProps.schemaType?.options?.batchUpload
+          if (isArrayOfObjectsInputProps(props)) {
+            // @ts-ignore — batchUpload is a custom option not in official schema types
+            const shouldDisplayMultiUpload = props.schemaType?.options?.batchUpload
             if (shouldDisplayMultiUpload) {
-              return arrayProps.renderDefault({
-                ...arrayProps,
+              return props.renderDefault({
+                ...props,
                 arrayFunctions: (arrayFunctionProps: any) =>
                   proveConfigForArrayFunctions({props: arrayFunctionProps, config: mappedConfig}),
               })
@@ -62,7 +55,7 @@ export const imageShopAsset = definePlugin<ExternalImageShopPluginConfig>((confi
             ...prev,
             {
               ...imageShopAssetSource,
-              component: (props, context) => {
+              component: (props) => {
                 return provideConfigAssetSource({props, config: mappedConfig})
               },
             },

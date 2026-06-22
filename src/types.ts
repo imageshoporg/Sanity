@@ -1,3 +1,5 @@
+import {ImageAsset} from 'sanity'
+
 export type ImageShopAsset = {
   documentId: string
   code: string
@@ -11,6 +13,7 @@ export type ImageShopAsset = {
   }
   text: {
     [k: string]: {
+      altText: string
       title: string
       description: string
       rights: string
@@ -27,7 +30,10 @@ export type ImageShopAsset = {
 }
 
 export type ImageShopIFrameEventData = [string, string, number, number]
-export type FieldMapper = (sanityAssetDocumentProps: any, imageShopData: ImageShopAsset) => any
+export type FieldMapper = (
+  sanityAssetDocumentProps: Partial<ImageAsset>,
+  imageShopData: ImageShopAsset,
+) => Partial<ImageAsset>
 export type LanguageResolver = () => string
 
 export interface ImageShopPluginConfig {

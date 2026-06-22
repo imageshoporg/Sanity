@@ -1,7 +1,6 @@
-import {ArrayInputFunctionsProps, ArraySchemaType} from 'sanity'
+import {ArrayInputFunctionsProps, ArraySchemaType, AssetSourceComponentProps} from 'sanity'
 
 import {ImageShopPluginConfig} from './types'
-import {AssetSourceComponentProps} from 'sanity'
 import ImageShopAssetSource from './components/ImageShopAssetSource'
 import ArrayFunctions from './components/ArrayFunctions'
 
