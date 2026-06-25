@@ -43,6 +43,8 @@ There are many ways to configure the interface for image selection.
 | requiredUploadFields    | String indicating upload fields which are required, separated by comma. Possible values: name, description, rights, credits, tags                                                                                                                               | string |               |
 | uploadFieldLanguages    | List of languages which should be shown for name, description etc. Default = no,en.                                                                                                                                                                             | string |               |
 | sanityAssetTextLanguage | What language to store in sanity, from the title, description and credit fields                                                                                                                                                                                 | string | "no"          |
+| exclusiveAssetSource    | When `true`, replaces all built-in Sanity asset sources so only Imageshop is available                                                                                                                                                                          | boolean | `false`      |
+| disableDirectUploads    | When `true`, disables the direct upload button in Sanity image fields                                                                                                                                                                                           | boolean | `false`      |
 
 ## Enable multi batch upload
 

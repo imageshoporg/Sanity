@@ -1,4 +1,9 @@
-import {definePlugin, isArrayOfObjectsInputProps, AssetSource} from 'sanity'
+import {
+  definePlugin,
+  isArrayOfObjectsInputProps,
+  AssetSource,
+  AssetSourceComponentProps,
+} from 'sanity'
 import Icon from './components/Icon'
 import {proveConfigForArrayFunctions, provideConfigAssetSource} from './componentResolver'
 import {FieldMapper, LanguageResolver} from './types'
@@ -9,6 +14,7 @@ export const imageShopAssetSource: Partial<AssetSource> = {
   title: 'Imageshop',
   icon: Icon,
 }
+
 export interface ExternalImageShopPluginConfig {
   sanityAssetTextLanguage?: string
   imageShopInterfaceName?: string
@@ -22,13 +28,23 @@ export interface ExternalImageShopPluginConfig {
   // custom hooks
   languageResolver?: LanguageResolver
   fieldMapper?: FieldMapper
+  // studio behaviour
+  exclusiveAssetSource?: boolean
+  disableDirectUploads?: boolean
 }
 
+export function buildImageShopAssetSource(config: ExternalImageShopPluginConfig): AssetSource {
+  return {
+    ...imageShopAssetSource,
+    component: (props: AssetSourceComponentProps) => {
+      return provideConfigAssetSource({props, config: mapExternalConfigToInternal(config)})
+    },
+  } as AssetSource
+}
 /**
  * @public
  */
-export const imageShopAsset = definePlugin<ExternalImageShopPluginConfig>((config = {}) => {
-  const mappedConfig = mapExternalConfigToInternal(config)
+export const imageShopAsset = definePlugin<ExternalImageShopPluginConfig>((internalConfig = {}) => {
   return {
     name: 'sanity-plugin-asset-source-imageshop',
 
@@ -42,7 +58,10 @@ export const imageShopAsset = definePlugin<ExternalImageShopPluginConfig>((confi
               return props.renderDefault({
                 ...props,
                 arrayFunctions: (arrayFunctionProps: any) =>
-                  proveConfigForArrayFunctions({props: arrayFunctionProps, config: mappedConfig}),
+                  proveConfigForArrayFunctions({
+                    props: arrayFunctionProps,
+                    config: mapExternalConfigToInternal(internalConfig),
+                  }),
               })
             }
           }
@@ -51,16 +70,12 @@ export const imageShopAsset = definePlugin<ExternalImageShopPluginConfig>((confi
       },
       image: {
         assetSources: (prev) => {
-          return [
-            ...prev,
-            {
-              ...imageShopAssetSource,
-              component: (props) => {
-                return provideConfigAssetSource({props, config: mappedConfig})
-              },
-            },
-          ]
+          const imageshopSource = buildImageShopAssetSource(internalConfig)
+          return internalConfig.exclusiveAssetSource
+            ? [imageshopSource]
+            : [...prev, imageshopSource]
         },
+        directUploads: internalConfig.disableDirectUploads ? false : undefined,
       },
     },
   }
