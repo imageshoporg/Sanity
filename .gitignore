@@ -63,3 +63,6 @@ dist
 CLAUDE.md
 AGENTS.md
 docs
+.agents
+.claude
+skills-lock.json
