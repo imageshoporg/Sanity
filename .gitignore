@@ -58,3 +58,8 @@ yalc.lock
 
 # Compiled plugin
 dist
+
+# Local AI assistant instructions
+CLAUDE.md
+AGENTS.md
+docs
