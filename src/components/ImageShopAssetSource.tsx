@@ -1,16 +1,13 @@
-import {useEffect, useRef, useState} from 'react'
-import {Dialog, Spinner, Stack, Flex, Text, Box, Button} from '@sanity/ui'
 import {AssetFromSource, AssetSourceComponentProps} from 'sanity'
 
-import {ImageShopAsset, ImageShopIFrameEventData, ImageShopPluginConfig} from '../types'
-import {IFrame} from './ImageShopAssetSource.styled'
-import {imageShopAssetToSanityAsset} from '../util/imageShopAssetToSanityAsset'
-import {IMAGESHOP_CLIENT, IMAGESHOP_INSERT_IMAGE_API} from '../constants/constants'
-import {ConfigWarning} from './ConfigWarning'
-import {getIframeParams} from '../util/imageshopUtils'
-import {useSecrets} from '@sanity/studio-secrets'
-import SecretsConfigView, {namespace, Secrets} from './SecretsConfigView'
-import {CogIcon} from '@sanity/icons'
+import {ImageShopPickerMode, ImageShopPickResult, ImageShopPluginConfig} from '../types'
+import {
+  imageShopAssetToSanityAsset,
+  imageShopDocumentUrlToSanityAsset,
+  imageShopVideoToSanityFileAsset,
+} from '../util/imageShopAssetToSanityAsset'
+import {isVideoOnlyAccept, resolveLanguage} from '../util/imageshopUtils'
+import {ImageShopPickerDialog} from './ImageShopPickerDialog'
 
 type Props = AssetSourceComponentProps & {
   isMultiUploadType?: boolean
@@ -18,153 +15,50 @@ type Props = AssetSourceComponentProps & {
   imageShopConfig: ImageShopPluginConfig
 }
 
+const resolveMode = (props: Props): ImageShopPickerMode => {
+  if (props.assetType === 'file') {
+    return isVideoOnlyAccept(props.accept) ? 'video' : 'document'
+  }
+  // image fields, and ArrayFunctions (which passes no assetType)
+  return 'image'
+}
+
 const ImageShopAssetSource = (props: Props) => {
   const {isLoadingMultiUpload, isMultiUploadType, imageShopConfig: pluginConfig} = props
-  const {secrets} = useSecrets<Secrets>(namespace)
-  const hasConfig = !!secrets?.apiKey
-  const [showSettings, setShowSettings] = useState(false)
+  const mode = resolveMode(props)
 
-  const [loadingMessage, setLoadingMessage] = useState<string | null>(
-    'Loading Imageshop Media Libary',
-  )
-  const contentRef = useRef<HTMLDivElement>(null)
-  const domId = useRef(Date.now())
-  const isMulti = isMultiUploadType
-  const languageResolver = pluginConfig.languageResolver
-
-  const fieldMapper = pluginConfig.fieldMapper
-
-  const handleClose = () => {
-    props.onClose()
-  }
-
-  const handleEvent = (event: MessageEvent) => {
-    if (!event || !event.data) {
-      return
-    }
-    if (typeof event.data !== 'string') {
-      return
-    }
-    if (event.origin !== IMAGESHOP_CLIENT) {
+  const handlePick = (result: ImageShopPickResult) => {
+    if (result.kind === 'document') {
+      props.onSelect([imageShopDocumentUrlToSanityAsset(result.url)])
       return
     }
 
-    let selectedFiles: AssetFromSource[] = []
-
-    const [imageShopDataString, title] = event.data.split(';') as ImageShopIFrameEventData
-
-    if (!imageShopDataString) {
-      return
-    }
-
-    const parsedEventData = JSON.parse(imageShopDataString)
-
-    const resolvedLanguage = languageResolver
-      ? languageResolver()
-      : pluginConfig.SANITY_ASSET_TEXT_LANGUAGE || 'no'
-
-    if (Array.isArray(parsedEventData)) {
-      if (!event.data) {
-        return
-      }
-      const imageShopDatas = parsedEventData as ImageShopAsset[]
-      if (!imageShopDatas || !Array.isArray(imageShopDatas) || imageShopDatas.length === 0) {
-        return
-      }
-
-      const assetsToBeUploaded = imageShopDatas
-        .map((imageShopData) =>
-          imageShopAssetToSanityAsset(imageShopData, resolvedLanguage, fieldMapper),
-        )
-        .filter((asset) => asset !== null) as AssetFromSource[]
-
-      if (assetsToBeUploaded) {
-        selectedFiles = assetsToBeUploaded
-      }
-    } else {
-      const imageShopData = parsedEventData as ImageShopAsset
-      const uploadAsset = imageShopAssetToSanityAsset(
-        imageShopData,
-        resolvedLanguage,
-        fieldMapper,
-        title,
+    const resolvedLanguage = resolveLanguage(pluginConfig)
+    const selectedFiles = result.assets
+      .map((imageShopData) =>
+        mode === 'video'
+          ? imageShopVideoToSanityFileAsset(imageShopData, resolvedLanguage)
+          : imageShopAssetToSanityAsset(
+              imageShopData,
+              resolvedLanguage,
+              pluginConfig.fieldMapper,
+              result.title,
+            ),
       )
-      if (uploadAsset) {
-        selectedFiles = [uploadAsset]
-      }
-    }
+      .filter((asset) => asset !== null) as AssetFromSource[]
 
     props.onSelect(selectedFiles)
   }
 
-  useEffect(() => {
-    window.addEventListener('message', handleEvent)
-
-    return () => {
-      window.removeEventListener('message', handleEvent)
-    }
-  }, [])
-
-  const iframeParams = getIframeParams({pluginConfig, isMulti, apiKey: secrets?.apiKey})
-
-  const url = iframeParams
-    ? `${IMAGESHOP_INSERT_IMAGE_API}?${new URLSearchParams(iframeParams)}`
-    : null
-
   return (
-    <Dialog
-      id="imageshop-asset-source"
-      header={
-        <Button
-          fontSize={[1]}
-          icon={CogIcon}
-          onClick={() => setShowSettings(true)}
-          mode="bleed"
-          aria-label="Imageshop settings"
-        />
-      }
-      onClose={handleClose}
-      width={hasConfig ? 4 : 1}
-      zOffset={9999}
-    >
-      {' '}
-      <Box padding={4}>
-        {isLoadingMultiUpload && (
-          <Stack space={3}>
-            <Flex align="center" justify="center">
-              <Spinner muted />
-            </Flex>
-            <Text size={1} muted align="center">
-              Uploading images, please wait.
-            </Text>
-          </Stack>
-        )}
-        {hasConfig && loadingMessage && (
-          <Stack space={3}>
-            <Flex align="center" justify="center">
-              <Spinner muted />
-            </Flex>
-            <Text size={1} muted align="center">
-              {loadingMessage}
-            </Text>
-          </Stack>
-        )}
-        {hasConfig && !!url && (
-          <div ref={contentRef} id={`imageshopWidget-${domId}`}>
-            <IFrame
-              onLoad={() => {
-                setLoadingMessage(null)
-              }}
-              frameBorder={0}
-              width="100%"
-              src={url}
-            />
-          </div>
-        )}
-        {!hasConfig && <ConfigWarning onOpenSettings={() => setShowSettings(true)} />}
-      </Box>
-      {showSettings && <SecretsConfigView onClose={() => setShowSettings(false)} />}
-    </Dialog>
+    <ImageShopPickerDialog
+      mode={mode}
+      isMulti={isMultiUploadType}
+      isLoadingMultiUpload={isLoadingMultiUpload}
+      imageShopConfig={pluginConfig}
+      onClose={props.onClose}
+      onPick={handlePick}
+    />
   )
 }
 

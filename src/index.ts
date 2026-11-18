@@ -8,6 +8,9 @@ import Icon from './components/Icon'
 import {proveConfigForArrayFunctions, provideConfigAssetSource} from './componentResolver'
 import {FieldMapper, LanguageResolver} from './types'
 import {mapExternalConfigToInternal} from './util/imageshopUtils'
+import {buildImageShopVideoType} from './schema/imageshopVideo'
+
+export type {ImageShopVideoValue} from './types'
 
 export const imageShopAssetSource: Partial<AssetSource> = {
   name: 'imageshop',
@@ -48,6 +51,10 @@ export const imageShopAsset = definePlugin<ExternalImageShopPluginConfig>((inter
   return {
     name: 'sanity-plugin-asset-source-imageshop',
 
+    schema: {
+      types: [buildImageShopVideoType(mapExternalConfigToInternal(internalConfig))],
+    },
+
     form: {
       components: {
         input: (props) => {
@@ -76,6 +83,10 @@ export const imageShopAsset = definePlugin<ExternalImageShopPluginConfig>((inter
             : [...prev, imageshopSource]
         },
         directUploads: internalConfig.disableDirectUploads ? false : undefined,
+      },
+      // Documents (and video-only file fields) — exclusiveAssetSource/disableDirectUploads are image-only.
+      file: {
+        assetSources: (prev) => [...prev, buildImageShopAssetSource(internalConfig)],
       },
     },
   }

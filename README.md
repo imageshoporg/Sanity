@@ -74,6 +74,53 @@ defineField({
 })
 ```
 
+## Videos
+
+Use the `imageshop.video` type (registered by the plugin). It stores a reference to the video in Imageshop — nothing is uploaded to Sanity, and the video is served from Imageshop's CDN.
+
+```ts
+defineField({name: 'heroVideo', title: 'Video', type: 'imageshop.video'})
+```
+
+In the picker, open the video with ⓘ and click **Sett inn** / **Insert**.
+
+Stored fields: `url`, `renditions[]` (`url`, `type`, `label`), `thumbnail`, `aspectRatio`, `title`, `description`, `creditLine`, `documentId`, `code`.
+
+Render every rendition as a `<source>` so the browser picks a format it supports:
+
+```tsx
+// *[_type == "post"]{heroVideo{url, renditions[]{url, type}, thumbnail, title}}
+<video poster={heroVideo.thumbnail} controls>
+  {heroVideo.renditions?.map((r) => (
+    <source key={r.url} src={r.url} type={`video/${r.type}`} />
+  ))}
+</video>
+```
+
+The `ImageShopVideoValue` type is exported for TypeScript users.
+
+> **Note** The video is a link to Imageshop: if it is deleted there, the link breaks. It doesn't appear among Sanity's assets.
+
+**Copying a video into Sanity instead:** a `file` field that accepts only video opens the picker in video mode and uploads the highest-resolution rendition as a regular Sanity file, with title/description/credit from Imageshop.
+
+```ts
+defineField({name: 'clip', type: 'file', options: {accept: 'video/*'}})
+```
+
+The copy runs in the editor's browser, so prefer `imageshop.video` for anything but short clips.
+
+## Documents
+
+Imageshop is available as a source in all `file` fields. The selected document is uploaded to Sanity as a regular file.
+
+```ts
+defineField({name: 'brochure', type: 'file', options: {accept: 'application/pdf'}})
+```
+
+- Only video-only `accept` values (e.g. `video/*`) switch the picker to videos; all other file fields show documents.
+- Imageshop doesn't send metadata for documents: the file name comes from the download URL, and title/description must be filled in Sanity.
+- `exclusiveAssetSource` and `disableDirectUploads` apply to image fields only.
+
 ## Enable multi language text selection
 
 If your sanity have multiple language you need to implement a language resolver, we need to know where to get the texts from in imageshop.
@@ -98,6 +145,7 @@ imageShopAsset({
 
 If you want to assign custom `fields` on the image object, you can create a custom field-mapper, which you can get texts from imageshop and then transfer the texts to the sanity image objects fields.
 By default, the alt text from imageshop is mapped to sanity internal "description" field with fallbacks to imageshop description / title fields.
+The field-mapper applies to images only, not to videos or documents.
 
 ```ts
 import {imageShopAsset} from '@imageshop-org/sanity-plugin-asset-source-imageshop'
